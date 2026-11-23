@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windows AI 追平 Mac 开源小白说明书 · 复制一句话让 AI 帮你配齐</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* 模板 A（单系统 Windows 卡片流）：单文件、零外网资源、自动深浅色、手机 375px 零横向滚动 */
+:root{
+  --bg:#f4f6f8; --paper:#ffffff; --ink:#17212b; --muted:#5a6875; --line:#dde4eb;
+  --accent:#0b6e7f; --accent-soft:#e3f3f5;
+  --orange:#ea580c; --orange-soft:#fff1e8;
+  --red:#d92d20; --red-soft:#fdeceb;
+  --ok:#16794c; --ok-soft:#e6f6ee;
+  --say:#eef3f7;
+  --f-body:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e151b; --paper:#151f28; --ink:#e5edf4; --muted:#97a6b3; --line:#263440;
+  --accent:#4ac2d2; --accent-soft:#15343b;
+  --orange:#fb923c; --orange-soft:#352113;
+  --red:#f87171; --red-soft:#3a1c1a;
+  --ok:#4cc38a; --ok-soft:#142f22;
+  --say:#1c2934; color-scheme:dark}}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15.5px;line-height:1.7}
+.wrap{max-width:780px;margin:0 auto;padding:24px 16px 64px;display:flex;flex-direction:column;gap:20px}
+
+.hero{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 20px}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.badge.free{background:var(--ok-soft);color:var(--ok)}
+.badge.sys{background:var(--orange-soft);color:var(--orange)}
+h1{font-size:clamp(24px,6vw,34px);font-weight:900;line-height:1.22;margin:12px 0 8px}
+.lede{margin:0;color:var(--muted);font-size:15.5px}
+.goal-bar{margin-top:14px;padding:10px 14px;border-radius:10px;background:var(--orange-soft);color:var(--ink);font-size:14px;border-left:4px solid var(--orange)}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 18px;min-width:0}
+h2{font-size:20px;font-weight:800;margin:0 0 12px;line-height:1.3}
+h3{font-size:16.5px;font-weight:700;margin:0 0 8px;line-height:1.35}
+p{margin:0 0 10px;overflow-wrap:break-word}
+p:last-child{margin-bottom:0}
+.muted{color:var(--muted);font-size:14px}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--say);padding:1px 5px;border-radius:4px;word-break:break-all}
+
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+@media (max-width:600px){.grid-2{grid-template-columns:minmax(0,1fr)}}
+.box{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.box b{display:block;font-size:14.5px;margin-bottom:3px}
+.box span{font-size:13.5px;color:var(--muted)}
+.box.good{border-left:4px solid var(--ok)}
+.box.bad{border-left:4px solid var(--muted)}
+
+.prep{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.prep{grid-template-columns:minmax(0,1fr)}}
+.prep-box{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.prep-box b{display:block;font-size:14.5px;margin-bottom:3px}
+.prep-box span{font-size:13.5px;color:var(--muted)}
+
+.steps{display:flex;flex-direction:column;gap:14px}
+.step{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.step-head{display:flex;align-items:flex-start;gap:10px}
+.num{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center;margin-top:1px}
+.step-title{flex:1;min-width:0}
+.step-title h3{margin:0 0 2px;font-size:16.5px}
+.who-tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:6px;margin-top:2px}
+.who-tag.ai{background:var(--accent-soft);color:var(--accent)}
+.who-tag.you{background:var(--orange-soft);color:var(--orange)}
+
+.prompt-box{position:relative;background:var(--say);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.prompt-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.prompt-lbl{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.03em}
+.copy-btn{flex:0 0 auto;font-family:var(--f-body);font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:var(--paper);color:var(--accent);cursor:pointer}
+.copy-btn:active{transform:scale(.97)}
+.copy-btn.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.prompt-txt{font-size:14.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+
+.expect{background:var(--ok-soft);color:var(--ok);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:500}
+
+.list-orange{display:grid;gap:12px}
+.o-item{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--orange);border-radius:10px;padding:14px}
+.o-item b{display:block;font-size:15px;margin-bottom:4px}
+.o-item p{font-size:14px;color:var(--muted);margin:0 0 8px}
+.o-item p:last-child{margin-bottom:0}
+
+.illus{background:var(--bg);border:1.5px dashed var(--line);border-radius:12px;padding:12px;margin-top:12px}
+.illus-cap{font-size:12.5px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.illus svg{display:block;width:100%;height:auto;max-width:100%}
+
+.foot{text-align:center;font-size:13px;color:var(--muted);padding-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="badges">
+      <span class="badge">小白 60%～80% 够用版</span>
+      <span class="badge free">开源免费 · 丢给 AI 自动配</span>
+      <span class="badge sys">Windows 10 / 11 适用</span>
+    </div>
+    <h1>Windows AI 追平 Mac 开源说明书</h1>
+    <p class="lede">不用学写代码、不用背命令。终端最容易调到满血；平时用 Claude 桌面端、ZCode、CodeBuddy、Cursor 等桌面端，同样能用这套把底层配稳。</p>
+    <div class="goal-bar"><b>核心用法：</b>直接把文件夹（或压缩包）丢进你常用的 AI 聊天框，复制下面那句话发出去，剩下的全由 AI 做完。</div>
+  </header>
+
+  <section class="card">
+    <h2>一、这是什么，配完能解决什么烦心事</h2>
+    <p>很多人在 Windows 上用 AI 助手总觉得别扭：AI 动不动抢鼠标、黑框窗口天天中文乱码白瞎额度、晚上挂机跑一半电脑自己睡着或重启。</p>
+    <p>这套方案只挑市面上现成的免费开源工具，按三块帮你补齐，不装花哨废软件，也不关电脑安全防护。</p>
+    <div class="grid-2">
+      <div class="box bad">
+        <b>没配之前</b>
+        <span>AI 操作软件老抢鼠标；黑框老退回旧版乱码；重点粗体白花花一片看不清；挂机过夜老重启断线。</span>
+      </div>
+      <div class="box good">
+        <b>配好之后</b>
+        <span>常用办公软件后台静默操作不抢鼠标；黑框中文稳、重点粗体自动标橙黄；插电过夜不断网不乱重启。</span>
+      </div>
+    </div>
+    <div class="illus">
+      <div class="illus-cap"><span>示意图 · 三大板块一次拉齐</span><span>（全由你的 AI 照清单自动装配）</span></div>
+      <svg viewBox="0 0 680 132" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Windows AI 三大板块升级示意图">
+        <rect x="4" y="4" width="672" height="124" rx="10" fill="#ffffff" stroke="#dde4eb"/>
+        <rect x="20" y="24" width="196" height="84" rx="10" fill="#e3f3f5" stroke="#0b6e7f"/>
+        <text x="118" y="54" text-anchor="middle" font-size="14" font-weight="700" fill="#0b6e7f">板块 1 · 不抢鼠标</text>
+        <text x="118" y="76" text-anchor="middle" font-size="12" fill="#5a6875">后台点按钮填字</text>
+        <text x="118" y="94" text-anchor="middle" font-size="12" fill="#5a6875">70%~80% 不打断干活</text>
+        <rect x="242" y="24" width="196" height="84" rx="10" fill="#fff1e8" stroke="#ea580c"/>
+        <text x="340" y="54" text-anchor="middle" font-size="14" font-weight="700" fill="#ea580c">板块 2 · 黑框满血</text>
+        <text x="340" y="76" text-anchor="middle" font-size="12" fill="#5a6875">不乱码不死循环</text>
+        <text x="340" y="94" text-anchor="middle" font-size="12" fill="#5a6875">AI 粗体自动标橙黄</text>
+        <rect x="464" y="24" width="196" height="84" rx="10" fill="#e6f6ee" stroke="#16794c"/>
+        <text x="562" y="54" text-anchor="middle" font-size="14" font-weight="700" fill="#16794c">板块 3 · 挂机与顺手</text>
+        <text x="562" y="76" text-anchor="middle" font-size="12" fill="#5a6875">插电过夜不重启</text>
+        <text x="562" y="94" text-anchor="middle" font-size="12" fill="#5a6875">空格预览+毫秒搜文件</text>
+      </svg>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>二、动手前只需准备</h2>
+    <div class="prep">
+      <div class="prep-box">
+        <b>1. Windows 电脑</b>
+        <span>Windows 10 或 11，过夜挂长任务记得插好电源。</span>
+      </div>
+      <div class="prep-box">
+        <b>2. 一个本地 AI 助手</b>
+        <span>Claude Code / ZCode / CodeBuddy / Cursor / Codex 等，终端和桌面端都能用。</span>
+      </div>
+      <div class="prep-box">
+        <b>3. 零额外费用</b>
+        <span>里面推荐的工具全部免费开源或微软官方自带。</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>三、怎么配：复制一句话发给你的 AI</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-head">
+          <span class="num">1</span>
+          <div class="step-title">
+            <h3>把文件夹或压缩包丢给 AI，发下面这句话（三块全装）</h3>
+            <span class="who-tag ai">AI 会先体检备份，再逐块帮你装好并验证</span>
+          </div>
+        </div>
+        <div class="prompt-box">
+          <div class="prompt-top">
+            <span class="prompt-lbl">一键全配提示词（推荐，点击复制）</span>
+            <button class="copy-btn" type="button">复制提示词</button>
+          </div>
+          <div class="prompt-txt">我是 Windows 电脑。请先读这个文件夹里的 2-发给你的AI-让它照着做.md，先体检我的电脑并问清我平时用终端多还是桌面端多，列清单让我确认后再按需配好「不抢鼠标、命令行与工具顺手、过夜不断线」。需要我确认或装软件时再停下来问我。</div>
+        </div>
+        <div class="expect">配完应该看到：记事本后台填字没动鼠标；AI 中文稳、插件不报错（用黑框终端的粗体变橙黄）；电源与小工具已就位。</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="num">2</span>
+          <div class="step-title">
+            <h3>只想先挑某一块配（比如只调黑框，或只调挂机）</h3>
+            <span class="who-tag you">把方括号里换成你想做的板块就行</span>
+          </div>
+        </div>
+        <div class="prompt-box">
+          <div class="prompt-top">
+            <span class="prompt-lbl">单板块选配提示词</span>
+            <button class="copy-btn" type="button">复制提示词</button>
+          </div>
+          <div class="prompt-txt">我是 Windows 电脑。这次只帮我做这个文件夹里的【写第几板块，比如：板块 2 终端满血与粗体标黄】，先读 2-发给你的AI-让它照着做.md 和对应板块文档，检查完我的电脑并备份原设置再动手。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>四、哪些时候 AI 会停下来等你</h2>
+    <p class="muted">下面这几件事涉及电脑安全或你的个人习惯，AI 不会替你乱点，做到这里会先问你：</p>
+    <div class="list-orange" style="margin-top:10px">
+      <div class="o-item">
+        <b>1. 装软件与改系统电源前</b>
+        <p>电脑会弹出软件安装同意框，或者 AI 列出要装的工具清单让你点同意。</p>
+      </div>
+      <div class="o-item">
+        <b>2. 遇到极少数软件保护或必须用鼠标的步骤</b>
+        <p>例如管理员弹窗、最小化窗口或画布拖拽，AI 会停住并明说借用你鼠标 3 秒，绝不偷偷抢。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>五、卡住了怎么办</h2>
+    <div class="list-orange">
+      <div class="o-item">
+        <b>某一步报错、粗体没变黄，或者黑框还是乱码</b>
+        <p>别自己对着黑框硬改，直接把下面这句话发给 AI，它会去翻对应板块末尾的排错表。</p>
+        <div class="prompt-box">
+          <div class="prompt-top">
+            <span class="prompt-lbl">排错救场提示词</span>
+            <button class="copy-btn" type="button">复制提示词</button>
+          </div>
+          <div class="prompt-txt">刚才这一步报错或没生效，请先对照 2 号文档和对应板块末尾的排错表查清楚原因再帮我修，修好后重新验证一遍，别原样瞎重试。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    单文件离线说明书 · Windows AI 追平 Mac 开源方案
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var parent = btn.closest('.prompt-box');
+      var box = parent.querySelector('.prompt-txt');
+      var txt = box ? box.textContent : '';
+      var ok = function(){
+        btn.textContent = '已复制';
+        btn.classList.add('done');
+        setTimeout(function(){
+          btn.textContent = '复制提示词';
+          btn.classList.remove('done');
+        }, 1500);
+      };
+      var fallback = function(){
+        if(!box) return;
+        var r = document.createRange();
+        r.selectNodeContents(box);
+        var s = getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+        btn.textContent = '已选中，按复制';
+      };
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(txt).then(ok, fallback);
+        } else { fallback(); }
+      }catch(e){ fallback(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
