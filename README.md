@@ -15,6 +15,6 @@
 
 ## 更多实战与交流
 
-- **实战笔记与完整踩坑文章**：[https://blog.huazaiai.dpdns.org/](https://blog.huazaiai.dpdns.org/)
+- **实战笔记与完整踩坑文章**：[https://huazaiai.com/](https://huazaiai.com/)
 - **免费开源交流 QQ 群**：`1130902372`（一群） / `2161031518`（备用二群）
 - **联系作者（定制 / 咨询 / 进群）**：微信 `CHYS043`（备注「GitHub」）
